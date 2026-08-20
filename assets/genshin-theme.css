@@ -183,14 +183,14 @@ code {
 }
 
 /* 中央主聊天区 → 纯白 */
-:root[data-theme] .agents-chat-panel:not(.workbench-aux-card):not(.workbench-right-dock-panel),
+:root[data-theme] .agents-chat-panel,
+:root[data-theme] .agents-content-area,
 :root[data-theme] .workbench-card:not(.workbench-aux-card):not(.workbench-right-dock-panel) {
   background: #ffffff !important;
 }
 
 /* 左侧导航栏 → 暖白 */
-:root[data-theme] .workbench-nav-bar,
-:root[data-theme] nav[class*="nav"] {
+:root[data-theme] .agents-sidebar {
   background: linear-gradient(180deg, #faf8f2 0%, #f5f0e8 100%) !important;
 }
 

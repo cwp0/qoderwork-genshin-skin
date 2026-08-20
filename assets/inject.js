@@ -267,8 +267,8 @@ async function main() {
         var old = document.getElementById(SIDE_CARD_ID);
         if (old) old.remove();
 
-        // 找侧边栏容器
-        var nav = document.querySelector('.workbench-nav-bar') || document.querySelector('nav');
+        // 找侧边栏容器（QoderWork 用 Tailwind group/sidebar）
+        var nav = document.querySelector('[class*="group/sidebar"]');
         if (!nav) return 'sidebar not found';
 
         var card = document.createElement('div');
@@ -281,7 +281,12 @@ async function main() {
           '</div>' +
           '<div style="font-size:11px;color:#3c3633;font-weight:600;">旅行者</div>' +
           '<div style="font-size:10px;color:#6b5e54;margin-top:2px;">● 探索中...</div>';
-        nav.prepend(card);
+        // 插入到第一个子元素（顶部拖拽区/留白）之后，而非 prepend
+        if (nav.children.length > 1) {
+          nav.insertBefore(card, nav.children[1]);
+        } else {
+          nav.prepend(card);
+        }
         return 'sidebar card=1';
       }
 
