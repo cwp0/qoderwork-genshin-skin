@@ -5,12 +5,13 @@
  * 做法（零侵入，不改 app.asar，不破坏签名）：
  *   1. 通过 DevToolsActivePort 拿到 QoderWork 渲染进程的 CDP 端口
  *   2. Runtime.evaluate 注入原神璃月金配色 CSS（genshin-theme.css）
- *   3. 顶部深蓝标题栏 + 右侧角色资料卡（名片/立绘/Vision/命座）
- *   4. 侧边栏顶部插入角色头像卡（MutationObserver 兜底 React 重渲染）
- *   5. 新任务欢迎页 Rive hero → 替换为浮动派蒙（rAF+Math.sin 飘浮）
+ *   3. 全页面名片背景（随机取一张 namecard-assets/*.png）+ 亮/暗蒙层保证文字清晰
+ *   4. 顶部深蓝标题栏
+ *   5. 侧边栏顶部插入角色头像卡（MutationObserver 兜底 React 重渲染）
+ *   6. 新任务欢迎页 Rive hero → 替换为浮动派蒙（CSS 动画飘浮）
  *
  * 用法：
- *   node inject.js            # 注入/刷新皮肤
+ *   node inject.js            # 注入/刷新皮肤（每次随机换一张背景）
  *   node inject.js --remove   # 移除皮肤并刷新页面还原
  *
  * 依赖：Node >= 21（内置全局 WebSocket）。macOS。QoderWork 需已启动。
@@ -18,7 +19,9 @@
  * 自定义素材（改完直接重跑 node inject.js 生效）：
  *   genshin/avatar.png           侧边栏头像卡里的头像（建议 128×128+ 方形 PNG）
  *   genshin/character-card.png   右侧角色卡里的立绘（建议 300×500 比例）
- *   genshin/paimon-mascot.png    新任务页浮动派蒙（PNG 需透明通道；96×96 显示）
+ *   genshin/paimon-mascot.png    新任务页浮动派蒙（PNG 需透明通道；80×80 显示）
+ *   namecard-assets/*.png        全页面背景池，随机抽一张（建议 1792×1024 横图）
+ *   character-gallery/<地区>/    角色图库，想换头像从这里挑一张覆盖 avatar.png
  */
 
 const fs = require('fs');
@@ -29,6 +32,7 @@ const REMOVE = process.argv.includes('--remove');
 
 // --- ID 常量 ---
 const SKIN_ID = 'qw-genshin-skin';
+const BG_ID = 'qw-genshin-bg-style';
 const TITLEBAR_ID = 'qw-genshin-titlebar';
 const PROFILE_ID = 'qw-genshin-profile';
 const SIDE_CARD_ID = 'qw-genshin-sidecard';
@@ -170,7 +174,7 @@ function cdpSend(wsUrl, method, params = {}) {
 function cleanupExpr() {
   return `
     (function() {
-      ['${SKIN_ID}','${TITLEBAR_ID}','${PROFILE_ID}','${SIDE_CARD_ID}',
+      ['${SKIN_ID}','${BG_ID}','${TITLEBAR_ID}','${PROFILE_ID}','${SIDE_CARD_ID}',
        '${MASCOT_STYLE_ID}',
        'qw-luigi-skin','qw-luigi-pipe-style','qw-mario-deco',
        'qw-qq-titlebar','qw-qq-profile','qw-qq-sidecard','qw-qq-surf-style'
@@ -242,6 +246,46 @@ async function main() {
   const r1 = await cdpEval(wsUrl, cssCode);
   log(`CSS 注入: ${JSON.stringify(r1?.result?.value || r1)}`);
 
+  // 第一步半：注入全页面名片背景（固定层 + 亮/暗蒙层）
+  const bgCode = `
+    (function() {
+      var BG_ID = '${BG_ID}';
+      var namecardUri = '${namecardUri}';
+      var old = document.getElementById(BG_ID);
+      if (old) old.remove();
+      if (!namecardUri) return 'no namecard';
+
+      var isDark = (document.documentElement.getAttribute('data-theme') || '').includes('dark');
+      // 蒙层：暗色更深、亮色更浅，保证文字清晰
+      var mask = isDark
+        ? 'linear-gradient(rgba(10,14,26,0.82),rgba(10,14,26,0.88))'
+        : 'linear-gradient(rgba(245,240,232,0.80),rgba(245,240,232,0.86))';
+
+      var s = document.createElement('style');
+      s.id = BG_ID;
+      s.textContent =
+        // 背景挂在 body 的伪元素上，固定铺满整个窗口
+        'body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;' +
+          'background:' + mask + ', url(' + namecardUri + ') center/cover no-repeat fixed;}' +
+        // 让主容器透明，露出背景；面板用半透明玻璃质感
+        ':root[data-theme] .agents-layout-root,' +
+        ':root[data-theme] .agents-content-area,' +
+        ':root[data-theme] .agents-chat-panel{background:transparent !important;}' +
+        (isDark
+          ? ':root[data-theme] .agents-sidebar{background:rgba(15,19,32,0.68) !important;backdrop-filter:blur(8px);}' +
+            ':root[data-theme] .workbench-card:not(.workbench-aux-card){background:rgba(26,32,53,0.70) !important;backdrop-filter:blur(6px);}'
+          : ':root[data-theme] .agents-sidebar{background:rgba(250,248,242,0.72) !important;backdrop-filter:blur(8px);}' +
+            ':root[data-theme] .workbench-card:not(.workbench-aux-card){background:rgba(255,255,255,0.78) !important;backdrop-filter:blur(6px);}') +
+        // 保证真实内容在背景之上
+        ':root[data-theme] .agents-layout-root{position:relative;z-index:1;}';
+      document.head.appendChild(s);
+      return 'bg=1, dark=' + isDark;
+    })();
+  `;
+  const r1b = await cdpEval(wsUrl, bgCode);
+  log(`全页背景: ${JSON.stringify(r1b?.result?.value || r1b)}`);
+
+
   // 第二步：注入标题栏（自动适配亮暗主题）
   const titlebarCode = `
     (function() {
@@ -281,7 +325,6 @@ async function main() {
     (function() {
       var SIDE_CARD_ID = '${SIDE_CARD_ID}';
       var avatarUri = '${avatarUri}';
-      var namecardUri = '${namecardUri}';
 
       function buildSideCard() {
         var old = document.getElementById(SIDE_CARD_ID);
@@ -292,29 +335,27 @@ async function main() {
         if (!nav) return 'sidebar not found';
 
         var isDark = (document.documentElement.getAttribute('data-theme') || '').includes('dark');
-        var textColor = isDark ? '#e8dcc8' : '#ffffff';
-        var subColor = isDark ? '#c4b896' : 'rgba(255,255,255,0.8)';
+        var textColor = isDark ? '#e8dcc8' : '#3c3633';
+        var subColor = isDark ? '#c4b896' : '#6b5e54';
         var borderColor = isDark ? '#3d3828' : '#c6a855';
-        var overlayBg = isDark ? 'rgba(10,14,26,0.5)' : 'rgba(27,40,56,0.4)';
+        var cardBg = isDark
+          ? 'linear-gradient(135deg,rgba(26,32,53,0.85),rgba(15,19,32,0.9))'
+          : 'linear-gradient(135deg,rgba(250,248,242,0.92),rgba(245,240,232,0.95))';
 
         var card = document.createElement('div');
         card.id = SIDE_CARD_ID;
         card.setAttribute('data-genshin-inject', '1');
-        var bgStyle = namecardUri
-          ? 'background:url(' + namecardUri + ') center/cover no-repeat;'
-          : 'background:linear-gradient(135deg,#1b2838,#2d4156);';
-        card.style.cssText = 'position:relative;padding:0;margin:4px 8px 8px;border-radius:8px;overflow:hidden;border:1px solid ' + borderColor + ';' + bgStyle;
+        card.style.cssText = 'position:relative;padding:12px 10px;margin:4px 8px 8px;border-radius:8px;overflow:hidden;' +
+          'border:1px solid ' + borderColor + ';background:' + cardBg + ';backdrop-filter:blur(6px);';
 
         card.innerHTML =
-          '<div style="position:relative;z-index:1;padding:12px 10px;background:' + overlayBg + ';backdrop-filter:blur(1px);">' +
-            '<div style="display:flex;align-items:center;gap:8px;">' +
-              '<div style="width:40px;height:40px;border-radius:8px;border:2px solid ' + borderColor + ';overflow:hidden;flex-shrink:0;background:#1a2035;">' +
-              (avatarUri ? '<img src="' + avatarUri + '" style="width:100%;height:100%;object-fit:cover;" />' : '') +
-              '</div>' +
-              '<div>' +
-                '<div style="font-size:12px;color:' + textColor + ';font-weight:600;text-shadow:0 1px 2px rgba(0,0,0,0.5);">旅行者</div>' +
-                '<div style="font-size:10px;color:' + subColor + ';margin-top:2px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">✦ 探索中...</div>' +
-              '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<div style="width:40px;height:40px;border-radius:8px;border:2px solid ' + borderColor + ';overflow:hidden;flex-shrink:0;background:' + (isDark ? '#1a2035' : '#f5f0e8') + ';">' +
+            (avatarUri ? '<img src="' + avatarUri + '" style="width:100%;height:100%;object-fit:cover;" />' : '') +
+            '</div>' +
+            '<div>' +
+              '<div style="font-size:12px;color:' + textColor + ';font-weight:600;">旅行者</div>' +
+              '<div style="font-size:10px;color:' + subColor + ';margin-top:2px;">✦ 探索中...</div>' +
             '</div>' +
           '</div>';
 
