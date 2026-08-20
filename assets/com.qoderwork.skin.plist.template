@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.qoderwork.skin</string>
+    <key>Comment</key>
+    <string>QoderWork 原神主题皮肤自动注入 (CDP方式, 安全无侵入)</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>__NODE__</string>
+        <string>__HOME__/.qoderwork/skin/inject.js</string>
+    </array>
+    <key>WatchPaths</key>
+    <array>
+        <string>__HOME__/Library/Application Support/QoderWork/DevToolsActivePort</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>0</integer>
+    <key>LaunchOnlyOnce</key>
+    <false/>
+    <key>StandardOutPath</key>
+    <string>__HOME__/.qoderwork/skin/inject.log</string>
+    <key>StandardErrorPath</key>
+    <string>__HOME__/.qoderwork/skin/inject.log</string>
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+</dict>
+</plist>

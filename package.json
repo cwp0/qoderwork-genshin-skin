@@ -1,0 +1,11 @@
+{
+  "name": "qoderwork-genshin-skin",
+  "version": "0.1.0",
+  "description": "Genshin Impact theme skin for QoderWork desktop app (macOS) — zero-invasive CDP injection",
+  "author": "cwp0",
+  "license": "MIT",
+  "keywords": ["qoderwork", "skin", "theme", "genshin-impact", "genshin"],
+  "engines": {
+    "node": ">=21.0.0"
+  }
+}
