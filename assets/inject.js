@@ -53,6 +53,17 @@ const VISION_FILES = {
   geo: path.join(__dirname, 'genshin', 'vision-geo.png'),
 };
 
+// 随机选一张名片背景
+const NAMECARD_DIR = path.join(__dirname, 'namecard-assets');
+function pickNamecard() {
+  try {
+    const files = fs.readdirSync(NAMECARD_DIR).filter(f => f.endsWith('.png'));
+    if (!files.length) return '';
+    const pick = files[Math.floor(Math.random() * files.length)];
+    return path.join(NAMECARD_DIR, pick);
+  } catch (_) { return ''; }
+}
+
 // --- 工具函数 ---
 
 function toDataUri(p) {
@@ -205,6 +216,7 @@ async function main() {
   const avatarUri = toDataUri(AVATAR_FILE);
   const characterUri = toDataUri(CHARACTER_FILE);
   const paimonUri = toDataUri(PAIMON_FILE);
+  const namecardUri = toDataUri(pickNamecard());
 
   const port = await getDebugPort();
   log(`CDP 端口: ${port}`);
@@ -230,38 +242,46 @@ async function main() {
   const r1 = await cdpEval(wsUrl, cssCode);
   log(`CSS 注入: ${JSON.stringify(r1?.result?.value || r1)}`);
 
-  // 第二步：注入标题栏
+  // 第二步：注入标题栏（自动适配亮暗主题）
   const titlebarCode = `
     (function() {
       var TITLEBAR_ID = '${TITLEBAR_ID}';
       var old = document.getElementById(TITLEBAR_ID);
       if (old) old.remove();
 
+      var isDark = (document.documentElement.getAttribute('data-theme') || '').includes('dark');
+      var bgGradient = isDark
+        ? 'linear-gradient(90deg,#0a0e1a 0%,#1a2035 50%,#0a0e1a 100%)'
+        : 'linear-gradient(90deg,#1b2838 0%,#2d4156 50%,#1b2838 100%)';
+      var goldColor = isDark ? '#e0cc8a' : '#c6a855';
+      var borderColor = isDark ? '#3d3828' : '#c6a855';
+
       var bar = document.createElement('div');
       bar.id = TITLEBAR_ID;
       bar.style.cssText = 'position:fixed;top:0;left:0;right:0;height:30px;z-index:99999;' +
-        'background:linear-gradient(90deg,#1b2838 0%,#2d4156 50%,#1b2838 100%);' +
+        'background:' + bgGradient + ';' +
         'display:flex;align-items:center;padding:0 12px;-webkit-app-region:drag;' +
-        'border-bottom:1px solid #c6a855;';
-      bar.innerHTML = '<span style="color:#c6a855;font-size:12px;font-weight:600;letter-spacing:1px;">✦ Genshin × QoderWork</span>' +
+        'border-bottom:1px solid ' + borderColor + ';';
+      bar.innerHTML = '<span style="color:' + goldColor + ';font-size:12px;font-weight:600;letter-spacing:1px;">✦ Genshin × QoderWork</span>' +
         '<span style="margin-left:auto;display:flex;gap:8px;-webkit-app-region:no-drag;">' +
-        '<span style="width:12px;height:12px;border-radius:50%;background:#74c2a8;display:inline-block;" title="原石"></span>' +
-        '<span style="width:12px;height:12px;border-radius:50%;background:#c6a855;display:inline-block;" title="摩拉"></span>' +
-        '<span style="width:12px;height:12px;border-radius:50%;background:#e8a832;display:inline-block;" title="体力"></span>' +
+        '<span style="width:12px;height:12px;border-radius:50%;background:#74c2a8;display:inline-block;" title="风"></span>' +
+        '<span style="width:12px;height:12px;border-radius:50%;background:' + goldColor + ';display:inline-block;" title="岩"></span>' +
+        '<span style="width:12px;height:12px;border-radius:50%;background:#e8a832;display:inline-block;" title="火"></span>' +
         '</span>';
       document.body.prepend(bar);
 
-      return 'titlebar=1';
+      return 'titlebar=1, dark=' + isDark;
     })();
   `;
   const r2 = await cdpEval(wsUrl, titlebarCode);
   log(`顶部标题栏: ${JSON.stringify(r2?.result?.value || r2)}`);
 
-  // 第三步：注入侧边栏头像卡
+  // 第三步：注入侧边栏头像卡（含名片背景）
   const sideCardCode = `
     (function() {
       var SIDE_CARD_ID = '${SIDE_CARD_ID}';
       var avatarUri = '${avatarUri}';
+      var namecardUri = '${namecardUri}';
 
       function buildSideCard() {
         var old = document.getElementById(SIDE_CARD_ID);
@@ -271,16 +291,33 @@ async function main() {
         var nav = document.querySelector('[class*="group/sidebar"]');
         if (!nav) return 'sidebar not found';
 
+        var isDark = (document.documentElement.getAttribute('data-theme') || '').includes('dark');
+        var textColor = isDark ? '#e8dcc8' : '#ffffff';
+        var subColor = isDark ? '#c4b896' : 'rgba(255,255,255,0.8)';
+        var borderColor = isDark ? '#3d3828' : '#c6a855';
+        var overlayBg = isDark ? 'rgba(10,14,26,0.5)' : 'rgba(27,40,56,0.4)';
+
         var card = document.createElement('div');
         card.id = SIDE_CARD_ID;
         card.setAttribute('data-genshin-inject', '1');
-        card.style.cssText = 'padding:12px 8px;text-align:center;border-bottom:1px solid #d4c5a9;';
+        var bgStyle = namecardUri
+          ? 'background:url(' + namecardUri + ') center/cover no-repeat;'
+          : 'background:linear-gradient(135deg,#1b2838,#2d4156);';
+        card.style.cssText = 'position:relative;padding:0;margin:4px 8px 8px;border-radius:8px;overflow:hidden;border:1px solid ' + borderColor + ';' + bgStyle;
+
         card.innerHTML =
-          '<div style="width:48px;height:48px;margin:0 auto 6px;border-radius:8px;border:2px solid #c6a855;overflow:hidden;background:#f5f0e8;">' +
-          (avatarUri ? '<img src="' + avatarUri + '" style="width:100%;height:100%;object-fit:cover;" />' : '') +
-          '</div>' +
-          '<div style="font-size:11px;color:#3c3633;font-weight:600;">旅行者</div>' +
-          '<div style="font-size:10px;color:#6b5e54;margin-top:2px;">● 探索中...</div>';
+          '<div style="position:relative;z-index:1;padding:12px 10px;background:' + overlayBg + ';backdrop-filter:blur(1px);">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<div style="width:40px;height:40px;border-radius:8px;border:2px solid ' + borderColor + ';overflow:hidden;flex-shrink:0;background:#1a2035;">' +
+              (avatarUri ? '<img src="' + avatarUri + '" style="width:100%;height:100%;object-fit:cover;" />' : '') +
+              '</div>' +
+              '<div>' +
+                '<div style="font-size:12px;color:' + textColor + ';font-weight:600;text-shadow:0 1px 2px rgba(0,0,0,0.5);">旅行者</div>' +
+                '<div style="font-size:10px;color:' + subColor + ';margin-top:2px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">✦ 探索中...</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+
         // 插入到第一个子元素（顶部拖拽区/留白）之后，而非 prepend
         if (nav.children.length > 1) {
           nav.insertBefore(card, nav.children[1]);

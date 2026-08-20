@@ -1,12 +1,14 @@
 /* ============================================================
-   QoderWork 自定义皮肤 · 原神 璃月金主题
-   把 QoderWork 主题令牌翻成原神风格暖色：
-   白面板 + 暖米底 + 原神金强调 + 汉仪文黑/苹方 + 金色滚动条。
+   QoderWork 自定义皮肤 · 原神主题（亮色 + 暗色双模式）
+   亮色：璃月金 — 暖米底 + 原神金强调 + 深褐文字
+   暗色：深渊星空 — 深蓝底 + 金色强调 + 淡暖文字
    ============================================================ */
 
-:root,
-:root[data-theme="dark-glass"],
-:root[data-theme] {
+/* ============================================================
+   亮色模式（Liyue Gold Light）
+   匹配所有非 dark 主题
+   ============================================================ */
+:root[data-theme]:not([data-theme*="dark"]) {
   color-scheme: light !important;
 
   /* ---------- 原神金色阶 ---------- */
@@ -74,6 +76,77 @@
 }
 
 /* ============================================================
+   暗色模式（Abyss Starry Night）
+   匹配 dark-glass 或任何含 dark 的主题
+   ============================================================ */
+:root[data-theme*="dark"] {
+  color-scheme: dark !important;
+
+  /* ---------- 原神金色阶（暗色适配） ---------- */
+  --genshin-gold-900: #e0cc8a;
+  --genshin-gold-700: #c6a855;
+  --genshin-gold-500: #a17a28;
+  --genshin-gold-300: #7a5c1a;
+  --genshin-gold-100: #2a2418;
+  --genshin-gold-050: #1a1610;
+  --genshin-ink: #e8dcc8;
+
+  /* ---------- 背景：深渊蓝黑 ---------- */
+  --color-bg-base:        #0f1320 !important;
+  --color-bg-layout:      #131828 !important;
+  --color-bg-container:   #1a2035 !important;
+  --color-bg-elevated:    #1e2540 !important;
+  --color-bg-spotlight:   #232a45 !important;
+  --color-bg-mask:        rgba(5,8,18,.72) !important;
+  --color-text-base:      #e8dcc8 !important;
+
+  /* ---------- 主色：原神金（在暗底上更亮） ---------- */
+  --color-primary:              #d4b96a !important;
+  --color-primary-hover:        #e0cc8a !important;
+  --color-primary-active:       #c6a855 !important;
+  --color-primary-text:         #e0cc8a !important;
+  --color-primary-text-hover:   #f0e4b8 !important;
+  --color-primary-text-active:  #c6a855 !important;
+  --color-primary-bg:           #1e1a12 !important;
+  --color-primary-bg-hover:     #2a2418 !important;
+  --color-primary-border:       #4a4232 !important;
+  --color-primary-border-hover: #6b5e44 !important;
+  --color-text-on-primary:      #0f1320 !important;
+
+  /* ---------- 文字：暖象牙 ---------- */
+  --color-text:            #e8dcc8 !important;
+  --color-text-secondary:  #c4b896 !important;
+  --color-text-tertiary:   #9a8e72 !important;
+  --color-text-quaternary: #6b6050 !important;
+
+  /* ---------- 描边：深金 ---------- */
+  --color-border:           #3d3828 !important;
+  --color-border-secondary: #2e2a1e !important;
+  --color-border-tertiary:  #232018 !important;
+
+  /* ---------- 填充：深蓝 ---------- */
+  --color-fill:            #1e2540 !important;
+  --color-fill-secondary:  #1a2035 !important;
+  --color-fill-tertiary:   #131828 !important;
+  --color-fill-quaternary: #0f1320 !important;
+
+  /* ---------- 链接/语义色（暗底适配） ---------- */
+  --color-link:    #6aadee !important;
+  --color-success: #6bcc5e !important;
+  --color-info:    #6aadee !important;
+  --color-warning: #f0c050 !important;
+  --color-error:   #e86860 !important;
+
+  /* ---------- 点缀色 ---------- */
+  --color-orange: #f0a050 !important;  /* 火 */
+  --color-yellow: #d4b96a !important;  /* 岩 */
+  --color-teal:   #88dac2 !important;  /* 风 */
+  --color-blue:   #6aadee !important;  /* 水 */
+  --color-purple: #b88ae8 !important;  /* 雷 */
+  --color-pink:   #f08aaa !important;  /* 未使用 */
+}
+
+/* ============================================================
    字体：汉仪文黑 / 苹方（原神风格字体）
    ============================================================ */
 :root[data-theme] body,
@@ -89,11 +162,11 @@
 }
 
 /* ============================================================
-   选中 & 焦点
+   选中 & 焦点（通用）
    ============================================================ */
 ::selection {
-  background: #c6a855 !important;
-  color: #ffffff !important;
+  background: var(--color-primary, #c6a855) !important;
+  color: var(--color-text-on-primary, #ffffff) !important;
 }
 
 input:focus-visible,
@@ -103,16 +176,16 @@ button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible,
 [role="textbox"]:focus-visible {
-  outline: 2px solid #74c2a8 !important;   /* 风元素绿焦点框 */
+  outline: 2px solid var(--color-teal, #74c2a8) !important;
   outline-offset: 1px;
 }
 
-a { text-shadow: none; color: #4a90d9; }
+a { text-shadow: none; color: var(--color-link, #4a90d9); }
 
 /* ============================================================
-   滚动条 · 窄竖条金色系
+   滚动条 · 金色系（亮暗自适应）
    ============================================================ */
-* { scrollbar-color: #d4c5a9 transparent; }
+* { scrollbar-color: var(--color-primary-border, #d4c5a9) transparent; }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 
@@ -124,42 +197,67 @@ a { text-shadow: none; color: #4a90d9; }
 
 ::-webkit-scrollbar-thumb {
   min-height: 30px;
-  background: #d4c5a9 !important;
+  background: var(--color-primary-border, #d4c5a9) !important;
   border-radius: 4px !important;
   border: none !important;
   box-shadow: none !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b8a070 !important;
+  background: var(--color-primary-border-hover, #b8a070) !important;
 }
 
 ::-webkit-scrollbar-corner { background: transparent !important; }
 
 /* ============================================================
-   用户发送消息气泡 → 天空蓝白（仿任务面板）
+   用户消息气泡（亮/暗分别处理）
    ============================================================ */
-.bg-sage-bg {
+:root[data-theme]:not([data-theme*="dark"]) .bg-sage-bg {
   background-color: #eff8ff !important;
   border: 1px solid #b8d4e8 !important;
 }
-.bg-sage-bg,
-.bg-sage-bg * {
+:root[data-theme]:not([data-theme*="dark"]) .bg-sage-bg,
+:root[data-theme]:not([data-theme*="dark"]) .bg-sage-bg * {
   color: #3c3633 !important;
 }
 
+:root[data-theme*="dark"] .bg-sage-bg {
+  background-color: #1a2a40 !important;
+  border: 1px solid #2a3a55 !important;
+}
+:root[data-theme*="dark"] .bg-sage-bg,
+:root[data-theme*="dark"] .bg-sage-bg * {
+  color: #e8dcc8 !important;
+}
+
 /* ============================================================
-   代码块 / 引用 → 深蓝底 + 暖色字
+   代码块 / 引用
    ============================================================ */
-pre, blockquote, table, code {
+:root[data-theme]:not([data-theme*="dark"]) pre,
+:root[data-theme]:not([data-theme*="dark"]) blockquote,
+:root[data-theme]:not([data-theme*="dark"]) table,
+:root[data-theme]:not([data-theme*="dark"]) code {
   border-color: #d4c5a9 !important;
 }
-code {
+:root[data-theme]:not([data-theme*="dark"]) code {
   background: #f5f0e8 !important;
   color: #7a5c1a !important;
 }
 
-/* 给主内容顶部留出标题栏(30px)的空间 */
+:root[data-theme*="dark"] pre,
+:root[data-theme*="dark"] blockquote,
+:root[data-theme*="dark"] table,
+:root[data-theme*="dark"] code {
+  border-color: #3d3828 !important;
+}
+:root[data-theme*="dark"] code {
+  background: #1a2035 !important;
+  color: #e0cc8a !important;
+}
+
+/* ============================================================
+   标题栏留空 + 布局适配（通用）
+   ============================================================ */
 :root[data-theme] html,
 :root[data-theme] body {
   box-sizing: border-box !important;
@@ -174,27 +272,43 @@ code {
 }
 
 /* ============================================================
-   布局着色
+   布局着色 · 亮色
    ============================================================ */
-
-/* 整体窗口底 → 暖灰 */
-:root[data-theme] .agents-layout-root {
+:root[data-theme]:not([data-theme*="dark"]) .agents-layout-root {
   background: #e2d8c4 !important;
 }
 
-/* 中央主聊天区 → 纯白 */
-:root[data-theme] .agents-chat-panel,
-:root[data-theme] .agents-content-area,
-:root[data-theme] .workbench-card:not(.workbench-aux-card):not(.workbench-right-dock-panel) {
+:root[data-theme]:not([data-theme*="dark"]) .agents-chat-panel,
+:root[data-theme]:not([data-theme*="dark"]) .agents-content-area,
+:root[data-theme]:not([data-theme*="dark"]) .workbench-card:not(.workbench-aux-card):not(.workbench-right-dock-panel) {
   background: #ffffff !important;
 }
 
-/* 左侧导航栏 → 暖白 */
-:root[data-theme] .agents-sidebar {
+:root[data-theme]:not([data-theme*="dark"]) .agents-sidebar {
   background: linear-gradient(180deg, #faf8f2 0%, #f5f0e8 100%) !important;
 }
 
-/* 右侧停靠面板 → 暖白 */
-:root[data-theme] .workbench-right-dock-panel {
+:root[data-theme]:not([data-theme*="dark"]) .workbench-right-dock-panel {
   background: #faf8f2 !important;
+}
+
+/* ============================================================
+   布局着色 · 暗色
+   ============================================================ */
+:root[data-theme*="dark"] .agents-layout-root {
+  background: #0a0e1a !important;
+}
+
+:root[data-theme*="dark"] .agents-chat-panel,
+:root[data-theme*="dark"] .agents-content-area,
+:root[data-theme*="dark"] .workbench-card:not(.workbench-aux-card):not(.workbench-right-dock-panel) {
+  background: #1a2035 !important;
+}
+
+:root[data-theme*="dark"] .agents-sidebar {
+  background: linear-gradient(180deg, #131828 0%, #0f1320 100%) !important;
+}
+
+:root[data-theme*="dark"] .workbench-right-dock-panel {
+  background: #131828 !important;
 }
