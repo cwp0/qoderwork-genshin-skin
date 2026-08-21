@@ -56,6 +56,13 @@ echo "==> 拷贝资源到 $SKIN_DIR"
 mkdir -p "$SKIN_DIR/genshin"
 cp -f "$SCRIPT_DIR/inject.js"          "$SKIN_DIR/"
 cp -f "$SCRIPT_DIR/genshin-theme.css"  "$SKIN_DIR/"
+# 换头像 / 换背景 便捷脚本
+for helper in swap-avatar.sh swap-background.sh; do
+  if [[ -f "$SCRIPT_DIR/$helper" ]]; then
+    cp -f "$SCRIPT_DIR/$helper" "$SKIN_DIR/$helper"
+    chmod +x "$SKIN_DIR/$helper"
+  fi
+done
 # genshin/ 里的图不覆盖已存在的（保留用户可能已换的 avatar.png 等）
 for f in "$SCRIPT_DIR/genshin/"*.png; do
   [[ -f "$f" ]] || continue
@@ -101,9 +108,13 @@ fi
 echo ""
 echo "✅ 安装完成！"
 echo ""
-echo "🎨 换头像 / 换立绘：直接替换以下文件，然后重跑 node ~/.qoderwork/skin/inject.js"
-echo "   ~/.qoderwork/skin/genshin/avatar.png          侧边栏头像"
-echo "   ~/.qoderwork/skin/genshin/character-card.png  右侧角色立绘"
-echo "   ~/.qoderwork/skin/genshin/paimon-mascot.png   新任务页浮动派蒙（透明 PNG）"
+echo "🎨 换头像 (交互挑选):"
+echo "   bash ~/.qoderwork/skin/swap-avatar.sh"
 echo ""
-echo "🧹 卸载：bash \"$SCRIPT_DIR/uninstall.sh\""
+echo "🖼  换背景 (随机 / 指定):"
+echo "   bash ~/.qoderwork/skin/swap-background.sh          # 随机换一张"
+echo "   bash ~/.qoderwork/skin/swap-background.sh 3        # 用第 3 张"
+echo "   bash ~/.qoderwork/skin/swap-background.sh --list   # 列出所有背景"
+echo ""
+echo "🔁 手动刷新:  node ~/.qoderwork/skin/inject.js"
+echo "🧹 卸载:      bash \"$SCRIPT_DIR/uninstall.sh\""

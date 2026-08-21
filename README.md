@@ -50,38 +50,43 @@ node ~/.qoderwork/skin/inject.js
 
 替换 `~/.qoderwork/skin/genshin/avatar.png`，建议 128×128 以上的方形 PNG（透明底）。
 
-角色图库里有预置的 Q 版角色可选：
+**推荐用交互脚本**（自动列出所有角色 + 立即刷新）：
 
 ```bash
-# 查看可用角色
-ls ~/.qoderwork/skin/character-gallery/
+bash ~/.qoderwork/skin/swap-avatar.sh
+# 或直接指定：
+bash ~/.qoderwork/skin/swap-avatar.sh 稻妻/raiden-shogun
+bash ~/.qoderwork/skin/swap-avatar.sh raiden-shogun     # 只给名字也行，会全库搜
+bash ~/.qoderwork/skin/swap-avatar.sh --list            # 列出所有可选
+```
 
-# 比如换成雷电将军
+手动替换：
+
+```bash
 cp ~/.qoderwork/skin/character-gallery/稻妻/raiden-shogun.png \
    ~/.qoderwork/skin/genshin/avatar.png
-
-# 重新注入
 node ~/.qoderwork/skin/inject.js
 ```
 
 ### 换背景
 
-背景池目录：`~/.qoderwork/skin/namecard-assets/`
+背景池目录：`~/.qoderwork/skin/namecard-assets/`。每次注入会随机抽一张作为全页面背景。
 
-每次注入会从该目录随机抽一张作为全页面背景。你可以：
+**推荐用便捷脚本**：
 
 ```bash
-# 添加新背景（建议 1792×1024 横向图片）
-cp your-image.png ~/.qoderwork/skin/namecard-assets/
-
-# 删除不想要的背景
-mv ~/.qoderwork/skin/namecard-assets/unwanted.png ~/.Trash/
-
-# 重新注入（会随机选一张新的）
-node ~/.qoderwork/skin/inject.js
+bash ~/.qoderwork/skin/swap-background.sh          # 随机换一张
+bash ~/.qoderwork/skin/swap-background.sh 3        # 固定用第 3 张
+bash ~/.qoderwork/skin/swap-background.sh --list   # 列出所有背景
+bash ~/.qoderwork/skin/swap-background.sh --restore # 恢复完整背景池
 ```
 
-如果只想用特定一张背景，把其余的都移出目录只留那一张即可。
+添加自己的图作为背景（1792×1024 横图最佳）：
+
+```bash
+cp your-image.png ~/.qoderwork/skin/namecard-assets/
+bash ~/.qoderwork/skin/swap-background.sh
+```
 
 ### 换派蒙
 

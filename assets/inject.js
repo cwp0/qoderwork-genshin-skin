@@ -256,10 +256,10 @@ async function main() {
       if (!namecardUri) return 'no namecard';
 
       var isDark = (document.documentElement.getAttribute('data-theme') || '').includes('dark');
-      // 蒙层：暗色更深、亮色更浅，保证文字清晰
+      // 蒙层：暗 50~58% / 亮 42~52%，让背景清晰可见但文字仍有对比
       var mask = isDark
-        ? 'linear-gradient(rgba(10,14,26,0.82),rgba(10,14,26,0.88))'
-        : 'linear-gradient(rgba(245,240,232,0.80),rgba(245,240,232,0.86))';
+        ? 'linear-gradient(rgba(10,14,26,0.50),rgba(10,14,26,0.58))'
+        : 'linear-gradient(rgba(245,240,232,0.42),rgba(245,240,232,0.52))';
 
       var s = document.createElement('style');
       s.id = BG_ID;
@@ -267,15 +267,18 @@ async function main() {
         // 背景挂在 body 的伪元素上，固定铺满整个窗口
         'body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;' +
           'background:' + mask + ', url(' + namecardUri + ') center/cover no-repeat fixed;}' +
-        // 让主容器透明，露出背景；面板用半透明玻璃质感
+        // 让主容器 + 内容区 + chat 面板 + 内部卡片全透明，露出背景
         ':root[data-theme] .agents-layout-root,' +
         ':root[data-theme] .agents-content-area,' +
-        ':root[data-theme] .agents-chat-panel{background:transparent !important;}' +
+        ':root[data-theme] .agents-chat-panel,' +
+        ':root[data-theme] .workbench-card:not(.workbench-aux-card):not(.workbench-right-dock-panel){' +
+          'background:transparent !important;}' +
+        // 侧边栏 / 右侧栏保留半透明玻璃底，保证按钮与列表文字对比
         (isDark
-          ? ':root[data-theme] .agents-sidebar{background:rgba(15,19,32,0.68) !important;backdrop-filter:blur(8px);}' +
-            ':root[data-theme] .workbench-card:not(.workbench-aux-card){background:rgba(26,32,53,0.70) !important;backdrop-filter:blur(6px);}'
-          : ':root[data-theme] .agents-sidebar{background:rgba(250,248,242,0.72) !important;backdrop-filter:blur(8px);}' +
-            ':root[data-theme] .workbench-card:not(.workbench-aux-card){background:rgba(255,255,255,0.78) !important;backdrop-filter:blur(6px);}') +
+          ? ':root[data-theme] .agents-sidebar{background:rgba(15,19,32,0.55) !important;backdrop-filter:blur(10px);}' +
+            ':root[data-theme] .workbench-right-dock-panel{background:rgba(19,24,40,0.55) !important;backdrop-filter:blur(10px);}'
+          : ':root[data-theme] .agents-sidebar{background:rgba(250,248,242,0.60) !important;backdrop-filter:blur(10px);}' +
+            ':root[data-theme] .workbench-right-dock-panel{background:rgba(250,248,242,0.60) !important;backdrop-filter:blur(10px);}') +
         // 保证真实内容在背景之上
         ':root[data-theme] .agents-layout-root{position:relative;z-index:1;}';
       document.head.appendChild(s);
