@@ -21,12 +21,12 @@
   --genshin-ink: #3c3633;
 
   /* ---------- 背景：白面板 + 暖米底 ---------- */
-  --color-bg-base:        #f5f0e8 !important;
-  --color-bg-layout:      #efe8dc !important;
+  --color-bg-base:        #eaf1f7 !important;
+  --color-bg-layout:      #dfe9f1 !important;
   --color-bg-container:   #ffffff !important;
   --color-bg-elevated:    #ffffff !important;
-  --color-bg-spotlight:   #faf8f2 !important;
-  --color-bg-mask:        rgba(42,36,30,.42) !important;
+  --color-bg-spotlight:   #f3f8fc !important;
+  --color-bg-mask:        rgba(30,42,54,.42) !important;
   --color-text-base:      #3c3633 !important;
 
   /* ---------- 主色：甘雨冰蓝（不再金） ---------- */
@@ -279,7 +279,7 @@ a { text-shadow: none; color: var(--color-link, #4a90d9); }
    布局着色 · 亮色
    ============================================================ */
 :root[data-theme]:not([data-theme*="dark"]) .agents-layout-root {
-  background: #e2d8c4 !important;
+  background: #dbe6ef !important;
 }
 
 :root[data-theme]:not([data-theme*="dark"]) .agents-chat-panel,
@@ -289,11 +289,19 @@ a { text-shadow: none; color: var(--color-link, #4a90d9); }
 }
 
 :root[data-theme]:not([data-theme*="dark"]) .agents-sidebar {
-  background: linear-gradient(180deg, #faf8f2 0%, #f5f0e8 100%) !important;
+  background: rgba(238, 246, 252, 0.42) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* 左侧栏内层容器（group/sidebar）会铺不透明底（亮=白/暗=深）盖住玻璃，
+   两主题都强制透明，让 .agents-sidebar 的半透明玻璃透出背景 */
+:root[data-theme] .agents-sidebar [class*="group/sidebar"] {
+  background: transparent !important;
 }
 
 :root[data-theme]:not([data-theme*="dark"]) .workbench-right-dock-panel {
-  background: #faf8f2 !important;
+  background: rgba(238, 246, 252, 0.42) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 /* ============================================================
@@ -559,5 +567,27 @@ button[type="submit"].rounded-full:hover,
 }
 
 /* 但保留主题标题栏/头像卡内的暖金标题（inline style 已经硬编码，不受影响） */
+
+/* ============================================================
+   右侧「任务监控」面板：面板已半透明玻璃化（0.42），其中「待办」
+   完成项用最淡的 --color-text-quaternary + 删除线，在透出背景时不易读。
+   两主题分别提亮/加深面板内的淡色文字（保留删除线），提升可读性。
+   ============================================================ */
+/* 暗色：面板叠在深色背景上，需提亮 */
+:root[data-theme*="dark"] .workbench-right-dock-panel .line-through,
+:root[data-theme*="dark"] .workbench-right-dock-panel [class*="text-text-quaternary"] {
+  color: #b3bdcc !important;
+}
+:root[data-theme*="dark"] .workbench-right-dock-panel [class*="text-text-tertiary"] {
+  color: #c2cad8 !important;
+}
+/* 亮色：面板叠在浅色背景上，需加深 */
+:root[data-theme]:not([data-theme*="dark"]) .workbench-right-dock-panel .line-through,
+:root[data-theme]:not([data-theme*="dark"]) .workbench-right-dock-panel [class*="text-text-quaternary"] {
+  color: #46566a !important;
+}
+:root[data-theme]:not([data-theme*="dark"]) .workbench-right-dock-panel [class*="text-text-tertiary"] {
+  color: #3a4a5e !important;
+}
 
 

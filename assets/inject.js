@@ -20,7 +20,9 @@
  *   genshin/avatar.png           侧边栏头像卡里的头像（建议 128×128+ 方形 PNG）
  *   genshin/character-card.png   右侧角色卡里的立绘（建议 300×500 比例）
  *   genshin/paimon-mascot.png    新任务页浮动派蒙（PNG 需透明通道；80×80 显示）
- *   namecard-assets/*.png        全页面背景池，随机抽一张（建议 1792×1024 横图）
+ *   namecard-assets/*.png        全页面背景池（含新任务欢迎页）。文件名含 -dark 的图用于
+ *                                深色主题、含 -light 的用于浅色主题；某主题无专属图时回退到
+ *                                池中任意一张（放单张未打标的图则亮暗共用）。建议 1792×1024 横图
  *   character-gallery/<地区>/    角色图库，想换头像从这里挑一张覆盖 avatar.png
  */
 
@@ -57,13 +59,19 @@ const VISION_FILES = {
   geo: path.join(__dirname, 'genshin', 'vision-geo.png'),
 };
 
-// 随机选一张名片背景
+// 按主题选一张名片背景：
+//   mode='dark'  优先取文件名含 "-dark" 的图；mode='light' 优先取含 "-light" 的图。
+//   若该主题没有专属图，则回退到池子里任意一张（单张未打标的图会被亮暗共用）。
+// 这样只放一张 namecard-ganyu.png 时亮暗都用它；用户丢一张 *-light*.png 进池子后，
+// 浅色主题会自动改用那张，深色仍用甘雨图。
 const NAMECARD_DIR = path.join(__dirname, 'namecard-assets');
-function pickNamecard() {
+function pickNamecard(mode) {
   try {
-    const files = fs.readdirSync(NAMECARD_DIR).filter(f => f.endsWith('.png'));
+    const files = fs.readdirSync(NAMECARD_DIR).filter(f => /\.(png|jpe?g|webp)$/i.test(f));
     if (!files.length) return '';
-    const pick = files[Math.floor(Math.random() * files.length)];
+    const tagged = files.filter(f => f.toLowerCase().includes('-' + mode));
+    const pool = tagged.length ? tagged : files;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
     return path.join(NAMECARD_DIR, pick);
   } catch (_) { return ''; }
 }
@@ -220,7 +228,8 @@ async function main() {
   const avatarUri = toDataUri(AVATAR_FILE);
   const characterUri = toDataUri(CHARACTER_FILE);
   const paimonUri = toDataUri(PAIMON_FILE);
-  const namecardUri = toDataUri(pickNamecard());
+  const namecardDarkUri = toDataUri(pickNamecard('dark'));
+  const namecardLightUri = toDataUri(pickNamecard('light'));
 
   const port = await getDebugPort();
   log(`CDP 端口: ${port}`);
@@ -254,34 +263,59 @@ async function main() {
     (function() {
       var BG_ID='${BG_ID}', TITLEBAR_ID='${TITLEBAR_ID}', SIDE_CARD_ID='${SIDE_CARD_ID}';
       var MASCOT_STAGE_ATTR='${MASCOT_STAGE_ATTR}', MASCOT_STYLE_ID='${MASCOT_STYLE_ID}';
-      var namecardUri='${namecardUri}', avatarUri='${avatarUri}', paimonUri='${paimonUri}';
+      var namecardDarkUri='${namecardDarkUri}', namecardLightUri='${namecardLightUri}';
+      var avatarUri='${avatarUri}', paimonUri='${paimonUri}';
 
       function isDarkTheme(){ return (document.documentElement.getAttribute('data-theme')||'').includes('dark'); }
 
       // --- 全页名片背景（依赖主题的蒙层）---
       function applyBg(){
         var old=document.getElementById(BG_ID); if(old) old.remove();
-        if(!namecardUri) return;
         var isDark=isDarkTheme();
-        var mask=isDark
-          ? 'linear-gradient(rgba(10,14,26,0.50),rgba(10,14,26,0.58))'
-          : 'linear-gradient(rgba(245,240,232,0.42),rgba(245,240,232,0.52))';
+        // 按主题选图；某主题缺专属图时回退到另一张（保证单张图也能用）
+        var img=isDark?(namecardDarkUri||namecardLightUri):(namecardLightUri||namecardDarkUri);
+        if(!img) return;
+        // 深色：不加任何蒙层（原图最清晰）；浅色：加一层极淡冷白蒙层，仅提升文字可读性
+        var baseMask=isDark
+          ? ''
+          : 'linear-gradient(rgba(245,249,253,0.14),rgba(245,249,253,0.14))';
+        var bgPrefix=baseMask?(baseMask+', '):'';
         var s=document.createElement('style'); s.id=BG_ID;
         s.textContent=
           'body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;'+
-            'background:'+mask+', url('+namecardUri+') center/cover no-repeat fixed;}'+
+            'background:'+bgPrefix+'url('+img+') center/cover no-repeat fixed;}'+
+          // 外层包裹容器全透明，露出 body 背景
           ':root[data-theme] .agents-layout-root,'+
           ':root[data-theme] .agents-content-area,'+
           ':root[data-theme] .agents-chat-panel,'+
-          ':root[data-theme] .workbench-card:not(.workbench-aux-card):not(.workbench-right-dock-panel){'+
+          ':root[data-theme] .agents-chat-view-root,'+
+          ':root[data-theme] .workbench-card:not(.workbench-aux-card):not(.workbench-right-dock-panel):not(.agents-parchment-paper-surface){'+
             'background:transparent !important;}'+
+          // 侧边栏 / 右侧栏保留玻璃底，保证按钮与列表文字对比
           (isDark
-            ? ':root[data-theme] .agents-sidebar{background:rgba(15,19,32,0.55) !important;backdrop-filter:blur(10px);}'+
-              ':root[data-theme] .workbench-right-dock-panel{background:rgba(19,24,40,0.55) !important;backdrop-filter:blur(10px);}'
-            : ':root[data-theme] .agents-sidebar{background:rgba(250,248,242,0.60) !important;backdrop-filter:blur(10px);}'+
-              ':root[data-theme] .workbench-right-dock-panel{background:rgba(250,248,242,0.60) !important;backdrop-filter:blur(10px);}')+
+            ? ':root[data-theme] .agents-sidebar{background:rgba(15,19,32,0.42) !important;backdrop-filter:blur(10px);}'+
+              ':root[data-theme] .workbench-right-dock-panel{background:rgba(19,24,40,0.42) !important;backdrop-filter:blur(10px);}'
+            : ':root[data-theme] .agents-sidebar{background:rgba(238,246,252,0.42) !important;backdrop-filter:blur(10px);}'+
+              ':root[data-theme] .workbench-right-dock-panel{background:rgba(238,246,252,0.42) !important;backdrop-filter:blur(10px);}')+
           ':root[data-theme] .agents-layout-root{position:relative;z-index:1;}';
         document.head.appendChild(s);
+      }
+
+      // --- 正文阅读面 + 外层容器蒙层（inline !important）---
+      // parchment 正文面 & 外层容器（layout-root/content-area 等）在浅色主题下会被 app
+      // 刷成不透明底（米色/白）挡住 body 背景；用行内 !important 压过。右侧栏 parchment 排除。
+      function applySurfaces(){
+        var isDark=isDarkTheme();
+        // 外层包裹容器一律透明，露出 body::before 背景
+        document.querySelectorAll('.agents-layout-root,.agents-layout-body,.agents-content-area,.agents-inner-view-clamp,.agents-chat-view-root').forEach(function(el){
+          el.style.setProperty('background', 'transparent', 'important');
+        });
+        // 正文面：深浅色都全透明无模糊（最清晰，用户要求不加蒙层/模糊）
+        document.querySelectorAll('.agents-parchment-paper-surface').forEach(function(el){
+          if(el.classList.contains('workbench-right-dock-panel')) return;
+          el.style.setProperty('background', 'transparent', 'important');
+          el.style.setProperty('backdrop-filter', 'none', 'important');
+        });
       }
 
       // --- 顶部标题栏（依赖主题）---
@@ -323,7 +357,7 @@ async function main() {
         card.style.cssText='position:relative;padding:12px 10px;margin:4px 8px 8px;border-radius:8px;overflow:hidden;'+
           'border:1px solid '+borderColor+';background:'+cardBg+';backdrop-filter:blur(6px);';
         card.innerHTML='<div style="display:flex;align-items:center;gap:8px;">'+
-            '<div style="width:40px;height:40px;border-radius:8px;border:2px solid '+borderColor+';overflow:hidden;flex-shrink:0;background:'+(isDark?'#1a2035':'#f5f0e8')+';">'+
+            '<div style="width:40px;height:40px;border-radius:8px;border:2px solid '+borderColor+';overflow:hidden;flex-shrink:0;background:'+(isDark?'#1a2035':'#eaf1f7')+';">'+
             (avatarUri?'<img src="'+avatarUri+'" style="width:100%;height:100%;object-fit:cover;" />':'')+
             '</div>'+
             '<div>'+
@@ -366,8 +400,8 @@ async function main() {
         return hosts.length;
       }
 
-      // 依赖主题的三块一起重建
-      function applyTheme(){ applyBg(); applyTitlebar(); applySideCard(); }
+      // 依赖主题的块一起重建
+      function applyTheme(){ applyBg(); applySurfaces(); applyTitlebar(); applySideCard(); }
 
       // 首次全部应用
       applyTheme();
@@ -388,6 +422,17 @@ async function main() {
         if(!document.getElementById(SIDE_CARD_ID)){
           requestAnimationFrame(function(){ requestAnimationFrame(applySideCard); });
         }
+        // 正文面 / 外层容器被 React 重建后会丢失行内蒙层 → 立即同步补回
+        // （rAF 在切换到新任务页时不稳定触发，会导致浅色主题下容器不透明底挡住背景）
+        var surfNeed=false;
+        document.querySelectorAll('.agents-layout-root,.agents-content-area,.agents-inner-view-clamp').forEach(function(el){
+          if(el.style.background!=='transparent') surfNeed=true;
+        });
+        document.querySelectorAll('.agents-parchment-paper-surface').forEach(function(el){
+          if(el.classList.contains('workbench-right-dock-panel')) return;
+          if(!el.style.background) surfNeed=true;
+        });
+        if(surfNeed) applySurfaces();
         var need=false;
         document.querySelectorAll('div.size-12.relative').forEach(function(host){
           if(!host.querySelector('['+MASCOT_STAGE_ATTR+']')) need=true;

@@ -7,7 +7,8 @@
 ## 效果
 
 - 冰蓝主色调（`--color-primary` 家族：暗色 `#78c8e8` / 亮色 `#4aa8d0`），彻底消除原绿色/金色强调
-- 甘雨 Q 版「证件照」头像（侧边栏头像卡）+ 甘雨名片作为全页面背景（亮/暗色磨砂蒙层）
+- 甘雨 Q 版「证件照」头像（侧边栏头像卡）+ 甘雨名片作为全页面背景，按主题自动挑图（文件名含 `-dark` / `-light`），暗色不加蒙层、亮色叠一层极淡蒙层
+- 侧边栏与右侧任务监控面板毛玻璃半透明，背景直接透到底
 - 顶部原神风格标题栏（风/冰/雷元素色圆点装饰）
 - 侧边栏角色头像卡（头像 + 旅行者 + ✦ 探索中...）
 - 新任务欢迎页浮动派蒙
@@ -15,13 +16,21 @@
 
 ### 预览
 
-新任务欢迎页（浮动派蒙 + 冰蓝配色 + 侧边栏旅行者头像卡）：
+暗色主题 · 新任务欢迎页（浮动派蒙 + 冰蓝配色 + 侧边栏旅行者头像卡）：
 
-![新任务欢迎页](docs/screenshots/welcome.png)
+![暗色新任务欢迎页](docs/screenshots/welcome-dark.jpg)
 
-对话页（甘雨名片背景 + 任务监控面板 + 冰蓝主色）：
+暗色主题 · 对话页（甘雨立绘背景 + 半透明侧边栏/任务监控面板）：
 
-![对话页](docs/screenshots/chat.png)
+![暗色对话页](docs/screenshots/chat-dark.jpg)
+
+亮色主题 · 新任务欢迎页（自动切换到浅色名片背景 + 冰蓝 `#4aa8d0` 主色）：
+
+![亮色新任务欢迎页](docs/screenshots/welcome-light.jpg)
+
+亮色主题 · 对话页（毛玻璃侧边栏与右侧面板，正文面透出背景）：
+
+![亮色对话页](docs/screenshots/chat-light.jpg)
 
 ## 安装
 
@@ -82,7 +91,7 @@ node ~/.qoderwork/skin/inject.js
 
 ### 换背景
 
-背景池目录：`~/.qoderwork/skin/namecard-assets/`。每次注入会随机抽一张作为全页面背景。
+背景池目录：`~/.qoderwork/skin/namecard-assets/`。每次注入会随机抽一张作为全页面背景。文件名含 `-dark` / `-light` 的图分别只在深色 / 浅色主题下被选中，没有专属图时回退到池中任意一张；支持 png / jpg / jpeg / webp。
 
 **推荐用便捷脚本**：
 
@@ -142,7 +151,7 @@ assets/
 │   ├── paimon-mascot.png      # 派蒙
 │   └── vision-*.png           # 元素图标
 ├── namecard-assets/           # 背景池（随机抽取）
-│   └── namecard-*.png
+│   └── namecard-*-dark.png / namecard-*-light.jpg
 └── character-gallery/         # 角色图库（按地区分）
     ├── 蒙德/
     ├── 璃月/
