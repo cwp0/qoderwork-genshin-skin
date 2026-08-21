@@ -29,41 +29,41 @@
   --color-bg-mask:        rgba(42,36,30,.42) !important;
   --color-text-base:      #3c3633 !important;
 
-  /* ---------- 主色：原神金 ---------- */
-  --color-primary:              #c6a855 !important;
-  --color-primary-hover:        #d4b96a !important;
-  --color-primary-active:       #a17a28 !important;
-  --color-primary-text:         #7a5c1a !important;
-  --color-primary-text-hover:   #a17a28 !important;
-  --color-primary-text-active:  #5c4412 !important;
-  --color-primary-bg:           #f5efe5 !important;
-  --color-primary-bg-hover:     #ede4d4 !important;
-  --color-primary-border:       #d4c5a9 !important;
-  --color-primary-border-hover: #b8a070 !important;
+  /* ---------- 主色：甘雨冰蓝（不再金） ---------- */
+  --color-primary:              #4aa8d0 !important;
+  --color-primary-hover:        #78c8e8 !important;
+  --color-primary-active:       #2a7a9e !important;
+  --color-primary-text:         #2a7a9e !important;
+  --color-primary-text-hover:   #4aa8d0 !important;
+  --color-primary-text-active:  #1a5a7e !important;
+  --color-primary-bg:           #e5f0f7 !important;
+  --color-primary-bg-hover:     #d6ecf7 !important;
+  --color-primary-border:       #a0d8ee !important;
+  --color-primary-border-hover: #78c8e8 !important;
   --color-text-on-primary:      #ffffff !important;
 
-  /* ---------- 文字：深褐墨 ---------- */
-  --color-text:            #3c3633 !important;
-  --color-text-secondary:  #6b5e54 !important;
-  --color-text-tertiary:   #8a7d72 !important;
-  --color-text-quaternary: #a89e94 !important;
+  /* ---------- 文字：深墨（略偏冷） ---------- */
+  --color-text:            #2a3040 !important;
+  --color-text-secondary:  #4a5568 !important;
+  --color-text-tertiary:   #6b7788 !important;
+  --color-text-quaternary: #9aa5b5 !important;
 
-  /* ---------- 描边：亚麻 ---------- */
-  --color-border:           #d4c5a9 !important;
-  --color-border-secondary: #e2d8c4 !important;
-  --color-border-tertiary:  #ede4d4 !important;
+  /* ---------- 描边：冷灰蓝（不再亚麻黄） ---------- */
+  --color-border:           #b8d4e8 !important;
+  --color-border-secondary: #d0e2f0 !important;
+  --color-border-tertiary:  #e8f0f7 !important;
 
-  /* ---------- 填充：暖米 ---------- */
-  --color-fill:            #f0e8d8 !important;
-  --color-fill-secondary:  #f5f0e8 !important;
-  --color-fill-tertiary:   #faf8f2 !important;
-  --color-fill-quaternary: #fcfbf8 !important;
+  /* ---------- 填充：冷雾白 ---------- */
+  --color-fill:            #e8f0f7 !important;
+  --color-fill-secondary:  #f0f5fa !important;
+  --color-fill-tertiary:   #f7fafd !important;
+  --color-fill-quaternary: #fcfdfe !important;
 
   /* ---------- 链接/语义色 ---------- */
   --color-link:    #4a90d9 !important;
   --color-success: #4a9c3e !important;
   --color-info:    #4a90d9 !important;
-  --color-warning: #e8a832 !important;
+  --color-warning: #e8802a !important;  /* 偏橙，避免与金色混淆 */
   --color-error:   #d4453a !important;
 
   /* ---------- 点缀色（元素色） ---------- */
@@ -100,18 +100,18 @@
   --color-bg-mask:        rgba(5,8,18,.72) !important;
   --color-text-base:      #eef2f7 !important;
 
-  /* ---------- 主色：原神金（在暗底上更亮） ---------- */
-  --color-primary:              #d4b96a !important;
-  --color-primary-hover:        #e0cc8a !important;
-  --color-primary-active:       #c6a855 !important;
-  --color-primary-text:         #e0cc8a !important;
-  --color-primary-text-hover:   #f0e4b8 !important;
-  --color-primary-text-active:  #c6a855 !important;
-  --color-primary-bg:           #1e1a12 !important;
-  --color-primary-bg-hover:     #2a2418 !important;
-  --color-primary-border:       #4a4232 !important;
-  --color-primary-border-hover: #6b5e44 !important;
-  --color-text-on-primary:      #0f1320 !important;
+  /* ---------- 主色：甘雨冰蓝（暗底冰亮） ---------- */
+  --color-primary:              #78c8e8 !important;
+  --color-primary-hover:        #a0d8ee !important;
+  --color-primary-active:       #4aa8d0 !important;
+  --color-primary-text:         #a0d8ee !important;
+  --color-primary-text-hover:   #d6ecf7 !important;
+  --color-primary-text-active:  #78c8e8 !important;
+  --color-primary-bg:           #122030 !important;
+  --color-primary-bg-hover:     #1a2c40 !important;
+  --color-primary-border:       #2a5570 !important;
+  --color-primary-border-hover: #3d7595 !important;
+  --color-text-on-primary:      #ffffff !important;
 
   /* ---------- 文字：冷白（甘雨冰系） ---------- */
   --color-text:            #eef2f7 !important;
@@ -119,10 +119,10 @@
   --color-text-tertiary:   #9aa6b7 !important;
   --color-text-quaternary: #6b7688 !important;
 
-  /* ---------- 描边：深金 ---------- */
-  --color-border:           #3d3828 !important;
-  --color-border-secondary: #2e2a1e !important;
-  --color-border-tertiary:  #232018 !important;
+  /* ---------- 描边：深冰蓝（不再深金） ---------- */
+  --color-border:           #2a3f55 !important;
+  --color-border-secondary: #1e2e3f !important;
+  --color-border-tertiary:  #182535 !important;
 
   /* ---------- 填充：深蓝 ---------- */
   --color-fill:            #1e2540 !important;
@@ -134,7 +134,7 @@
   --color-link:    #6aadee !important;
   --color-success: #6bcc5e !important;
   --color-info:    #6aadee !important;
-  --color-warning: #f0c050 !important;
+  --color-warning: #f0a050 !important;  /* 偏橙，避免与金色混淆 */
   --color-error:   #e86860 !important;
 
   /* ---------- 点缀色 ---------- */
@@ -165,8 +165,12 @@
    选中 & 焦点（通用）
    ============================================================ */
 ::selection {
-  background: var(--color-primary, #c6a855) !important;
-  color: var(--color-text-on-primary, #ffffff) !important;
+  background: rgba(120,200,232,0.55) !important;   /* 冰蓝半透明，取代金色 */
+  color: #ffffff !important;
+}
+:root[data-theme]:not([data-theme*="dark"]) ::selection {
+  background: rgba(74,168,208,0.35) !important;
+  color: #1a2530 !important;
 }
 
 input:focus-visible,
@@ -176,16 +180,16 @@ button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible,
 [role="textbox"]:focus-visible {
-  outline: 2px solid var(--color-teal, #74c2a8) !important;
+  outline: 2px solid #78c8e8 !important;
   outline-offset: 1px;
 }
 
 a { text-shadow: none; color: var(--color-link, #4a90d9); }
 
 /* ============================================================
-   滚动条 · 金色系（亮暗自适应）
+   滚动条 · 冰蓝系（亮暗自适应）
    ============================================================ */
-* { scrollbar-color: var(--color-primary-border, #d4c5a9) transparent; }
+* { scrollbar-color: rgba(120,200,232,0.35) transparent; }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 
@@ -197,14 +201,14 @@ a { text-shadow: none; color: var(--color-link, #4a90d9); }
 
 ::-webkit-scrollbar-thumb {
   min-height: 30px;
-  background: var(--color-primary-border, #d4c5a9) !important;
+  background: rgba(120,200,232,0.40) !important;
   border-radius: 4px !important;
   border: none !important;
   box-shadow: none !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-border-hover, #b8a070) !important;
+  background: rgba(160,216,238,0.60) !important;
 }
 
 ::-webkit-scrollbar-corner { background: transparent !important; }
@@ -237,22 +241,22 @@ a { text-shadow: none; color: var(--color-link, #4a90d9); }
 :root[data-theme]:not([data-theme*="dark"]) blockquote,
 :root[data-theme]:not([data-theme*="dark"]) table,
 :root[data-theme]:not([data-theme*="dark"]) code {
-  border-color: #d4c5a9 !important;
+  border-color: #b8d4e8 !important;
 }
 :root[data-theme]:not([data-theme*="dark"]) code {
-  background: #f5f0e8 !important;
-  color: #7a5c1a !important;
+  background: #e5f0f7 !important;
+  color: #2a7a9e !important;
 }
 
 :root[data-theme*="dark"] pre,
 :root[data-theme*="dark"] blockquote,
 :root[data-theme*="dark"] table,
 :root[data-theme*="dark"] code {
-  border-color: #3d3828 !important;
+  border-color: #2a3f55 !important;
 }
 :root[data-theme*="dark"] code {
   background: #1a2035 !important;
-  color: #e0cc8a !important;
+  color: #a0d8ee !important;
 }
 
 /* ============================================================
@@ -426,6 +430,48 @@ a { text-shadow: none; color: var(--color-link, #4a90d9); }
 /* 所有用 --color-success（原本绿色）的元素：换成冰蓝 */
 :root[data-theme] {
   --color-success: #78c8e8 !important;
+}
+
+/* ============================================================
+   思考框 / 状态提示：QoderWork 用 .text-warning 表达"思考中"，
+   默认走 --color-warning（金黄）——甘雨主题下改成冰蓝
+   ============================================================ */
+:root[data-theme*="dark"] .text-warning,
+:root[data-theme*="dark"] .text-warning * {
+  color: #a0d8ee !important;
+  fill: #a0d8ee !important;
+}
+:root[data-theme]:not([data-theme*="dark"]) .text-warning,
+:root[data-theme]:not([data-theme*="dark"]) .text-warning * {
+  color: #4aa8d0 !important;
+  fill: #4aa8d0 !important;
+}
+/* 兜底：任何显式的 --color-warning 语义色也走冰系 */
+:root[data-theme*="dark"] { --color-warning: #a0d8ee !important; }
+:root[data-theme]:not([data-theme*="dark"]) { --color-warning: #4aa8d0 !important; }
+
+/* ============================================================
+   任务监控 / 待办面板 checkmark：用 .text-primary-active，
+   --color-primary-active 已改冰蓝，这里再兜一层显式颜色
+   ============================================================ */
+:root[data-theme*="dark"] .text-primary-active,
+:root[data-theme*="dark"] .text-primary-active * {
+  color: #78c8e8 !important;
+  fill: #78c8e8 !important;
+}
+:root[data-theme]:not([data-theme*="dark"]) .text-primary-active,
+:root[data-theme]:not([data-theme*="dark"]) .text-primary-active * {
+  color: #4aa8d0 !important;
+  fill: #4aa8d0 !important;
+}
+
+/* ============================================================
+   拖动条 (col-resize divider)：默认走 .bg-primary，
+   --color-primary 已改冰蓝，这里再兜一层显式颜色
+   ============================================================ */
+:root[data-theme] .cursor-col-resize .bg-primary,
+:root[data-theme] [class*="cursor-col-resize"] .bg-primary {
+  background-color: rgba(120,200,232,0.55) !important;
 }
 
 /* ============================================================

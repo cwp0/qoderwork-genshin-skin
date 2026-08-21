@@ -300,8 +300,8 @@ async function main() {
       var bgGradient = isDark
         ? 'linear-gradient(90deg,#0a0e1a 0%,#1a2035 50%,#0a0e1a 100%)'
         : 'linear-gradient(90deg,#1b2838 0%,#2d4156 50%,#1b2838 100%)';
-      var goldColor = isDark ? '#e0cc8a' : '#c6a855';
-      var borderColor = isDark ? '#3d3828' : '#c6a855';
+      var accentColor = isDark ? '#a0d8ee' : '#4aa8d0';       // 冰蓝，替换旧金色 goldColor
+      var borderColor = isDark ? '#2a3f55' : '#a0d8ee';       // 边框：冰蓝
 
       var bar = document.createElement('div');
       bar.id = TITLEBAR_ID;
@@ -309,11 +309,11 @@ async function main() {
         'background:' + bgGradient + ';' +
         'display:flex;align-items:center;padding:0 12px;-webkit-app-region:drag;' +
         'border-bottom:1px solid ' + borderColor + ';';
-      bar.innerHTML = '<span style="color:' + goldColor + ';font-size:12px;font-weight:600;letter-spacing:1px;">✦ Genshin × QoderWork</span>' +
+      bar.innerHTML = '<span style="color:' + accentColor + ';font-size:12px;font-weight:600;letter-spacing:1px;">✦ Genshin × QoderWork</span>' +
         '<span style="margin-left:auto;display:flex;gap:8px;-webkit-app-region:no-drag;">' +
-        '<span style="width:12px;height:12px;border-radius:50%;background:#74c2a8;display:inline-block;" title="风"></span>' +
-        '<span style="width:12px;height:12px;border-radius:50%;background:' + goldColor + ';display:inline-block;" title="岩"></span>' +
-        '<span style="width:12px;height:12px;border-radius:50%;background:#e8a832;display:inline-block;" title="火"></span>' +
+        '<span style="width:12px;height:12px;border-radius:50%;background:#88dac2;display:inline-block;" title="风"></span>' +
+        '<span style="width:12px;height:12px;border-radius:50%;background:' + accentColor + ';display:inline-block;" title="冰"></span>' +
+        '<span style="width:12px;height:12px;border-radius:50%;background:#b88ae8;display:inline-block;" title="雷"></span>' +
         '</span>';
       document.body.prepend(bar);
 
@@ -338,12 +338,12 @@ async function main() {
         if (!nav) return 'sidebar not found';
 
         var isDark = (document.documentElement.getAttribute('data-theme') || '').includes('dark');
-        var textColor = isDark ? '#e8dcc8' : '#3c3633';
-        var subColor = isDark ? '#c4b896' : '#6b5e54';
-        var borderColor = isDark ? '#3d3828' : '#c6a855';
+        var textColor = isDark ? '#eef2f7' : '#2a3040';       // 冷白 / 深墨
+        var subColor = isDark ? '#a0d8ee' : '#4aa8d0';        // 冰蓝副文字
+        var borderColor = isDark ? '#2a5570' : '#a0d8ee';     // 冰蓝描边
         var cardBg = isDark
           ? 'linear-gradient(135deg,rgba(26,32,53,0.85),rgba(15,19,32,0.9))'
-          : 'linear-gradient(135deg,rgba(250,248,242,0.92),rgba(245,240,232,0.95))';
+          : 'linear-gradient(135deg,rgba(240,248,253,0.92),rgba(220,236,247,0.95))';
 
         var card = document.createElement('div');
         card.id = SIDE_CARD_ID;
