@@ -312,3 +312,85 @@ a { text-shadow: none; color: var(--color-link, #4a90d9); }
 :root[data-theme*="dark"] .workbench-right-dock-panel {
   background: #131828 !important;
 }
+
+/* ============================================================
+   聊天输入框：改掉自带的金色呼吸光晕，避免整个输入区偏黄
+   用「水/雷/风」元素色组合，既保留原神感又降低"发黄"观感
+   ============================================================ */
+
+/* 亮色：以水青为主，雷紫为辅（内敛不刺眼） */
+:root[data-theme]:not([data-theme*="dark"]) .chat-input-primary-glow::before {
+  box-shadow:
+    0 10px 30px -14px rgba(74,144,217,0.35),
+    -18px 0 42px -24px rgba(116,194,168,0.30),
+    18px 0 42px -24px rgba(155,109,204,0.24) !important;
+}
+:root[data-theme]:not([data-theme*="dark"]) .chat-input-primary-glow::after {
+  box-shadow:
+    0 12px 34px -12px rgba(74,144,217,0.38),
+    20px 0 48px -22px rgba(116,194,168,0.32),
+    -20px 0 48px -22px rgba(155,109,204,0.26) !important;
+}
+
+/* 暗色：加强饱和度，深底下更好看 */
+:root[data-theme*="dark"] .chat-input-primary-glow::before {
+  box-shadow:
+    0 10px 30px -14px rgba(106,173,238,0.42),
+    -18px 0 42px -24px rgba(136,218,194,0.36),
+    18px 0 42px -24px rgba(184,138,232,0.32) !important;
+}
+:root[data-theme*="dark"] .chat-input-primary-glow::after {
+  box-shadow:
+    0 12px 34px -12px rgba(106,173,238,0.46),
+    20px 0 48px -22px rgba(136,218,194,0.40),
+    -20px 0 48px -22px rgba(184,138,232,0.36) !important;
+}
+
+/* 覆盖内置的 color-mix 版本（浏览器支持时会走这个分支） */
+@supports (color: color-mix(in lab, red, red)) {
+  :root[data-theme]:not([data-theme*="dark"]) .chat-input-primary-glow::before {
+    box-shadow:
+      0 10px 30px -14px color-mix(in srgb, #4a90d9 32%, transparent),
+      -18px 0 42px -24px color-mix(in srgb, #74c2a8 26%, transparent),
+      18px 0 42px -24px color-mix(in srgb, #9b6dcc 24%, transparent) !important;
+  }
+  :root[data-theme]:not([data-theme*="dark"]) .chat-input-primary-glow::after {
+    box-shadow:
+      0 12px 34px -12px color-mix(in srgb, #4a90d9 38%, transparent),
+      20px 0 48px -22px color-mix(in srgb, #74c2a8 30%, transparent),
+      -20px 0 48px -22px color-mix(in srgb, #9b6dcc 28%, transparent) !important;
+  }
+  :root[data-theme*="dark"] .chat-input-primary-glow::before {
+    box-shadow:
+      0 10px 30px -14px color-mix(in srgb, #6aadee 40%, transparent),
+      -18px 0 42px -24px color-mix(in srgb, #88dac2 34%, transparent),
+      18px 0 42px -24px color-mix(in srgb, #b88ae8 30%, transparent) !important;
+  }
+  :root[data-theme*="dark"] .chat-input-primary-glow::after {
+    box-shadow:
+      0 12px 34px -12px color-mix(in srgb, #6aadee 44%, transparent),
+      20px 0 48px -22px color-mix(in srgb, #88dac2 38%, transparent),
+      -20px 0 48px -22px color-mix(in srgb, #b88ae8 34%, transparent) !important;
+  }
+}
+
+/* 输入框内文字/光标：改用中性冷白，避免"偏黄"观感 */
+:root[data-theme*="dark"] .chat-input-editor-text,
+:root[data-theme*="dark"] .chat-input-editor-text * {
+  color: #f0ece4 !important;
+  caret-color: #6aadee !important;
+}
+:root[data-theme]:not([data-theme*="dark"]) .chat-input-editor-text,
+:root[data-theme]:not([data-theme*="dark"]) .chat-input-editor-text * {
+  color: #2a2622 !important;
+  caret-color: #4a90d9 !important;
+}
+
+/* 输入框边框：暗色下换成更冷的深蓝灰，去掉金色描边 */
+:root[data-theme*="dark"] .chat-input-primary-glow {
+  border-color: rgba(106,173,238,0.35) !important;
+}
+:root[data-theme]:not([data-theme*="dark"]) .chat-input-primary-glow {
+  border-color: rgba(74,144,217,0.35) !important;
+}
+
