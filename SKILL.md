@@ -1,15 +1,19 @@
 ---
 name: qoderwork-genshin-skin
-description: Installs a Genshin Impact theme skin for the QoderWork desktop app (macOS) — Liyue-gold warm palette, top title bar with elemental icons, right-side character profile card with namecard banner, sidebar character avatar card, and a floating Paimon mascot on the new-task welcome page. Applied via zero-invasive CDP injection + launchd persistence (never modifies app.asar). Use when the user asks to install / apply / customize / uninstall the QoderWork Genshin skin, 原神主题/原神皮肤/璃月金主题.
-version: 0.1.0
-name_zh: 原神主题皮肤 for QoderWork
+description: Installs a Genshin Impact themed skin for the QoderWork desktop app (macOS). Default preset is Ganyu · Cryo (ice-blue palette + Ganyu Q-chibi avatar + Ganyu namecard background). Ships with a top title bar (元素图标), sidebar character avatar card, and a floating Paimon mascot on the new-task welcome page. Applied via zero-invasive CDP injection + launchd persistence (never modifies app.asar). One-shot install auto-applies the Ganyu preset; uninstall cleanly reverts everything to QoderWork defaults. Use when the user asks to install / apply / customize / uninstall the QoderWork Genshin skin, 原神主题/原神皮肤/甘雨主题/冰系主题.
+version: 0.2.0
+name_zh: 原神主题皮肤 for QoderWork（甘雨·冰系）
 ---
 
-# QoderWork 原神主题皮肤
+# QoderWork 原神主题皮肤（默认预设：甘雨·冰系）
 
-把 QoderWork 桌面端换成原神风格配色：璃月金暖色令牌 + 顶部深蓝标题栏（带元素图标）+
-右侧角色资料卡（名片横幅/角色立绘/元素Vision/命之座星级/个性签名）+ 侧边栏角色头像卡 +
-新任务欢迎页浮动派蒙吉祥物。
+把 QoderWork 桌面端换成原神风格配色。**开箱即用的默认预设是「甘雨·冰系」**：冰蓝
+主色令牌（`--color-primary` 家族全部改为 `#78c8e8 / #4aa8d0` 冰蓝）+ 甘雨 Q 版证件照
+头像 + 甘雨名片作为聊天区背景 + 顶部深蓝标题栏（带元素图标）+ 侧边栏「旅行者」头像
+卡 + 新任务欢迎页浮动派蒙吉祥物。
+
+> 用户安装本 skill 后 QoderWork 立刻切换成甘雨主题；卸载后所有注入的 CSS/DOM 会被清除，
+> `~/.qoderwork/skin/` 目录整体移入废纸篓，页面恢复 QoderWork 默认外观。
 
 实现方式是**零侵入**的：通过 CDP（Chrome DevTools Protocol）向渲染进程注入 CSS + DOM，
 配合 launchd 常驻服务在每次 QoderWork 启动/刷新时自动重注入。**不改 app.asar、不破坏
@@ -48,8 +52,11 @@ cd <此 skill 的 assets 目录>
 bash uninstall.sh
 ```
 
-会 `launchctl unload` 常驻服务、在页面内移除皮肤并刷新还原，然后把 plist 和运行目录
-**移入「废纸篓」**（遵循文件保护策略，不使用 `rm`，可随时恢复）。
+会 `launchctl unload` 常驻服务、在页面内运行 `inject.js --remove` 移除所有注入的
+`<style id="qw-genshin-skin">`、`#qw-genshin-titlebar`、`#qw-genshin-sidecard`、浮动派蒙
+DOM 并刷新还原，然后把 plist 和 `~/.qoderwork/skin/` 运行目录**整体移入「废纸篓」**
+（遵循文件保护策略，不使用 `rm`，可随时恢复）。卸载后 QoderWork 恢复默认外观，
+下次启动也不会再自动注入。
 
 ## 手动运行 / 刷新
 
@@ -72,14 +79,19 @@ node ~/.qoderwork/skin/inject.js --remove   # 移除皮肤并刷新页面还原
 
 ## 皮肤四大部分（改动点）
 
-1. **配色**：注入 `<style id="qw-genshin-skin">`，覆盖 `:root[data-theme]` 下的
-   璃月金暖色 token（白面板 + 暖米底 + 原神金强调 + 汉仪文黑 + 金色滚动条）。
+1. **配色（甘雨·冰系）**：注入 `<style id="qw-genshin-skin">`，把 `--color-primary`
+   家族（含 `-hover/-active/-text/-bg/-border`）、`--color-warning`、`--color-border*`
+   全部改为冰蓝（暗色 `#78c8e8`，亮色 `#4aa8d0`），并在 `[data-modal]/[data-agents-page]/`
+   `[data-agents-channel]/[data-scope]` 等作用域容器里重复整套覆盖，防止 QoderWork
+   在这些容器里把 `--color-primary` 重新定义成绿色。同时显式修 `.text-warning`
+   （思考中）、`.text-primary-active`（待办对勾）、`::selection`、`.bg-bg-highlight`
+   （白底 pill 按钮，暗色模式下强制黑字，防止白底白字）。
 2. **顶部标题栏**：`position:fixed;height:30px` 的深蓝渐变横条 + "Genshin × QoderWork"
-   字标 + 当前元素图标 + 三个装饰按钮（原石/摩拉/体力）。
-3. **角色资料卡**：挂在 `.workbench-right-dock-panel` 顶部的可折叠面板
-   （名片横幅 / 角色立绘 / Vision / 命座 / 签名），MutationObserver 兜底。
+   字标 + 元素装饰点（风/冰/雷）。
+3. **侧边栏头像卡**：挂在 `.agents-sidebar > [class*="group/sidebar"]` 第二个子元素
+   之前的可折叠卡片（头像 + "旅行者" + "✦ 探索中..."），MutationObserver 兜底 React 重渲染。
 4. **浮动派蒙**：定位官方 hero `div.size-12.relative > canvas` 把 canvas 设 `opacity:0`，
-   覆盖一个 `<img src="paimon-mascot.png">` 在 rAF 循环里跑 `Math.sin`：
+   覆盖一个 `<img src="paimon-mascot.png">` 在 `@keyframes paimon-float` 里跑
    `translateY(±10px) rotate(±3°)`，2.5 秒一个周期。
 
 ## 元素主题切换（TODO: v2）
