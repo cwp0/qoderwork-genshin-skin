@@ -98,7 +98,7 @@
   --color-bg-elevated:    #1e2540 !important;
   --color-bg-spotlight:   #232a45 !important;
   --color-bg-mask:        rgba(5,8,18,.72) !important;
-  --color-text-base:      #e8dcc8 !important;
+  --color-text-base:      #eef2f7 !important;
 
   /* ---------- 主色：原神金（在暗底上更亮） ---------- */
   --color-primary:              #d4b96a !important;
@@ -113,11 +113,11 @@
   --color-primary-border-hover: #6b5e44 !important;
   --color-text-on-primary:      #0f1320 !important;
 
-  /* ---------- 文字：暖象牙 ---------- */
-  --color-text:            #e8dcc8 !important;
-  --color-text-secondary:  #c4b896 !important;
-  --color-text-tertiary:   #9a8e72 !important;
-  --color-text-quaternary: #6b6050 !important;
+  /* ---------- 文字：冷白（甘雨冰系） ---------- */
+  --color-text:            #eef2f7 !important;
+  --color-text-secondary:  #c9d2df !important;
+  --color-text-tertiary:   #9aa6b7 !important;
+  --color-text-quaternary: #6b7688 !important;
 
   /* ---------- 描边：深金 ---------- */
   --color-border:           #3d3828 !important;
@@ -377,20 +377,65 @@ a { text-shadow: none; color: var(--color-link, #4a90d9); }
 /* 输入框内文字/光标：改用中性冷白，避免"偏黄"观感 */
 :root[data-theme*="dark"] .chat-input-editor-text,
 :root[data-theme*="dark"] .chat-input-editor-text * {
-  color: #f0ece4 !important;
-  caret-color: #6aadee !important;
+  color: #f2f5fa !important;
+  caret-color: #78c8e8 !important;
 }
 :root[data-theme]:not([data-theme*="dark"]) .chat-input-editor-text,
 :root[data-theme]:not([data-theme*="dark"]) .chat-input-editor-text * {
-  color: #2a2622 !important;
+  color: #1e2530 !important;
   caret-color: #4a90d9 !important;
 }
 
-/* 输入框边框：暗色下换成更冷的深蓝灰，去掉金色描边 */
+/* 输入框边框：偏白，柔和的冰边 */
 :root[data-theme*="dark"] .chat-input-primary-glow {
-  border-color: rgba(106,173,238,0.35) !important;
+  border-color: rgba(220,232,245,0.35) !important;
 }
 :root[data-theme]:not([data-theme*="dark"]) .chat-input-primary-glow {
-  border-color: rgba(74,144,217,0.35) !important;
+  border-color: rgba(120,140,170,0.35) !important;
 }
+
+/* ============================================================
+   甘雨(Cryo) 冰蓝按钮：发送 / 停止按钮改成冰蓝
+   ============================================================ */
+
+/* 冰系色阶 */
+:root[data-theme] {
+  --cryo-ice-100:  #d6ecf7;
+  --cryo-ice-300:  #a0d8ee;
+  --cryo-ice-500:  #78c8e8;
+  --cryo-ice-700:  #4aa8d0;
+  --cryo-ice-900:  #2a7a9e;
+}
+
+/* 聊天输入框里的最后一个圆形按钮（发送 / 停止）改成冰蓝 */
+.chat-input-primary-glow button.rounded-full:last-of-type,
+.chat-input-primary-glow button[class*="rounded-full"][class*="p-1.5"],
+.chat-input-primary-glow button[type="submit"] {
+  background: linear-gradient(135deg, var(--cryo-ice-500), var(--cryo-ice-700)) !important;
+  color: #ffffff !important;
+  border-color: var(--cryo-ice-500) !important;
+  box-shadow: 0 2px 12px -2px rgba(120,200,232,0.4) !important;
+}
+.chat-input-primary-glow button.rounded-full:last-of-type:hover,
+.chat-input-primary-glow button[class*="rounded-full"][class*="p-1.5"]:hover,
+.chat-input-primary-glow button[type="submit"]:hover {
+  background: linear-gradient(135deg, var(--cryo-ice-300), var(--cryo-ice-500)) !important;
+  box-shadow: 0 4px 18px -2px rgba(160,216,238,0.55) !important;
+}
+
+/* 所有用 --color-success（原本绿色）的元素：换成冰蓝 */
+:root[data-theme] {
+  --color-success: #78c8e8 !important;
+}
+
+/* ============================================================
+   全局文字：进一步压制暖黄，倾向冷白
+   ============================================================ */
+:root[data-theme*="dark"] body,
+:root[data-theme*="dark"] body * {
+  --color-text: #eef2f7;
+}
+
+/* 但保留主题标题栏/头像卡内的暖金标题（inline style 已经硬编码，不受影响） */
+
 
