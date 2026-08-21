@@ -73,13 +73,17 @@ for f in "$SCRIPT_DIR/genshin/"*.png; do
 done
 
 # 素材库（角色头像选择器 + 名片背景）
+# 注意：必须拷贝目录「内容」（src/.），直接 cp -Rf src dst 在 dst 已存在时
+# 会把源目录嵌套进去（character-gallery/character-gallery），旧素材永不更新。
 if [[ -d "$SCRIPT_DIR/character-gallery" ]]; then
   echo "==> 拷贝角色头像素材库..."
-  cp -Rf "$SCRIPT_DIR/character-gallery" "$SKIN_DIR/character-gallery"
+  mkdir -p "$SKIN_DIR/character-gallery"
+  cp -Rf "$SCRIPT_DIR/character-gallery/." "$SKIN_DIR/character-gallery/"
 fi
 if [[ -d "$SCRIPT_DIR/namecard-assets" ]]; then
   echo "==> 拷贝名片素材库..."
-  cp -Rf "$SCRIPT_DIR/namecard-assets" "$SKIN_DIR/namecard-assets"
+  mkdir -p "$SKIN_DIR/namecard-assets"
+  cp -Rf "$SCRIPT_DIR/namecard-assets/." "$SKIN_DIR/namecard-assets/"
 fi
 if [[ -f "$SCRIPT_DIR/namecard-data.json" ]]; then
   cp -f "$SCRIPT_DIR/namecard-data.json" "$SKIN_DIR/namecard-data.json"
