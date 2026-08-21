@@ -482,6 +482,27 @@ button[type="submit"].rounded-full:hover,
   border-color: var(--cryo-ice-500) !important;
 }
 
+/* ============================================================
+   修白底白字：QoderWork 「添加」「新建定时任务」等 pill 按钮用
+   .bg-bg-highlight（底 = #fff）+ .text-text-on-primary（原设计=黑，
+   但我为了送信按钮把 --color-text-on-primary 设成了白，导致白底白字）
+   → 显式给白/浅底 pill 按钮补深冷灰文字
+   ============================================================ */
+:root[data-theme*="dark"] .bg-bg-highlight,
+:root[data-theme*="dark"] [class*="bg-bg-highlight"] {
+  color: #0d1826 !important;
+}
+:root[data-theme*="dark"] .bg-bg-highlight *,
+:root[data-theme*="dark"] [class*="bg-bg-highlight"] * {
+  color: #0d1826 !important;
+  fill: #0d1826 !important;
+}
+/* 亮色模式：--color-bg-highlight 反向为深色 pill，文字保持白 */
+:root[data-theme]:not([data-theme*="dark"]) .bg-bg-highlight,
+:root[data-theme]:not([data-theme*="dark"]) [class*="bg-bg-highlight"] {
+  color: #ffffff !important;
+}
+
 /* 所有用 --color-success（原本绿色）的元素：换成冰蓝 */
 :root[data-theme] {
   --color-success: #78c8e8 !important;
