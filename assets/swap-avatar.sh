@@ -13,6 +13,53 @@ GALLERY="${SKIN_DIR}/character-gallery"
 AVATAR_TARGET="${SKIN_DIR}/genshin/avatar.png"
 INJECT="${SKIN_DIR}/inject.js"
 
+# 自动头像裁剪：把全身立绘裁到「头+双角」方形，避免头像卡里只看到身体
+crop_to_head() {
+  local src="$1" dst="$2"
+  python3 - "$src" "$dst" <<'PY'
+import sys
+from PIL import Image
+import numpy as np
+
+src, dst = sys.argv[1], sys.argv[2]
+img = Image.open(src).convert('RGBA')
+w, h = img.size
+arr = np.array(img)
+alpha = arr[:, :, 3]
+nz = np.where(alpha > 10)
+if len(nz[0]) == 0:
+    # 全透明兜底：直接拷原图
+    img.save(dst); sys.exit(0)
+top, bottom = int(nz[0].min()), int(nz[0].max())
+left, right = int(nz[1].min()), int(nz[1].max())
+body_h = bottom - top
+# 头部（含发/角/耳）大约占顶部 42%
+head_h = int(body_h * 0.42)
+crop_top = max(0, top - int(body_h * 0.03))
+crop_bottom = top + head_h
+cx = (left + right) // 2
+side = crop_bottom - crop_top
+half = side // 2
+crop_left = max(0, cx - half)
+crop_right = min(w, cx + half)
+final_side = min(crop_right - crop_left, crop_bottom - crop_top)
+crop_right = crop_left + final_side
+crop_bottom = crop_top + final_side
+out = img.crop((crop_left, crop_top, crop_right, crop_bottom)).resize((512, 512), Image.LANCZOS)
+out.save(dst)
+PY
+}
+
+# 兜底：没有 python3 / PIL 时退回直接拷贝
+copy_or_crop() {
+  local src="$1" dst="$2"
+  if command -v python3 >/dev/null 2>&1 && python3 -c 'import PIL, numpy' >/dev/null 2>&1; then
+    crop_to_head "$src" "$dst" || cp "$src" "$dst"
+  else
+    cp "$src" "$dst"
+  fi
+}
+
 if [ ! -d "$GALLERY" ]; then
   echo "❌ 未找到角色图库: $GALLERY"
   echo "   请先运行 bash assets/install.sh 完成安装"
@@ -61,8 +108,8 @@ if [ -n "${1:-}" ]; then
     exit 1
   fi
 
-  cp "$src" "$AVATAR_TARGET"
-  echo "✅ 头像已换为: $(basename "$src" .png)"
+  copy_or_crop "$src" "$AVATAR_TARGET"
+  echo "✅ 头像已换为: $(basename "$src" .png)（已自动裁到头部）"
   echo "   ($src)"
   if [ -f "$INJECT" ]; then
     node "$INJECT" 2>&1 | tail -3
@@ -131,9 +178,9 @@ fi
 
 char="${chars[$((char_idx-1))]}"
 src="$GALLERY/$region/$char.png"
-cp "$src" "$AVATAR_TARGET"
+copy_or_crop "$src" "$AVATAR_TARGET"
 echo ""
-echo "✅ 头像已换为: $region/$char"
+echo "✅ 头像已换为: $region/$char（已自动裁到头部）"
 
 # 立即重新注入
 if [ -f "$INJECT" ]; then
