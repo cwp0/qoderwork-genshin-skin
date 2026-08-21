@@ -13,7 +13,7 @@ GALLERY="${SKIN_DIR}/character-gallery"
 AVATAR_TARGET="${SKIN_DIR}/genshin/avatar.png"
 INJECT="${SKIN_DIR}/inject.js"
 
-# 自动头像裁剪：把全身立绘裁到「头+双角」方形，避免头像卡里只看到身体
+# 自动头像裁剪：证件照式，头 + 肩 + 一点胸（方图，超出画布用透明 padding）
 crop_to_head() {
   local src="$1" dst="$2"
   python3 - "$src" "$dst" <<'PY'
@@ -28,24 +28,30 @@ arr = np.array(img)
 alpha = arr[:, :, 3]
 nz = np.where(alpha > 10)
 if len(nz[0]) == 0:
-    # 全透明兜底：直接拷原图
     img.save(dst); sys.exit(0)
 top, bottom = int(nz[0].min()), int(nz[0].max())
 left, right = int(nz[1].min()), int(nz[1].max())
 body_h = bottom - top
-# 头部（含发/角/耳）大约占顶部 42%
-head_h = int(body_h * 0.42)
+
+# 证件照式：头顶（留 3% 缓冲）到身体 58%（约到胸口/手臂上端）
 crop_top = max(0, top - int(body_h * 0.03))
-crop_bottom = top + head_h
+crop_bottom = top + int(body_h * 0.58)
 cx = (left + right) // 2
 side = crop_bottom - crop_top
 half = side // 2
-crop_left = max(0, cx - half)
-crop_right = min(w, cx + half)
-final_side = min(crop_right - crop_left, crop_bottom - crop_top)
-crop_right = crop_left + final_side
-crop_bottom = crop_top + final_side
-out = img.crop((crop_left, crop_top, crop_right, crop_bottom)).resize((512, 512), Image.LANCZOS)
+
+# 需要的横向范围，若超出原图边界则用透明 canvas 补边
+need_left = cx - half
+need_right = cx + half
+pad_left = max(0, -need_left)
+pad_right = max(0, need_right - w)
+canvas_w = w + pad_left + pad_right
+canvas = Image.new('RGBA', (canvas_w, h), (0, 0, 0, 0))
+canvas.paste(img, (pad_left, 0), img)
+
+new_left = need_left + pad_left
+new_right = need_right + pad_left
+out = canvas.crop((new_left, crop_top, new_right, crop_bottom)).resize((512, 512), Image.LANCZOS)
 out.save(dst)
 PY
 }
