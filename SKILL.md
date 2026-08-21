@@ -1,7 +1,7 @@
 ---
 name: qoderwork-genshin-skin
 description: Installs a Genshin Impact themed skin for the QoderWork desktop app (macOS). Default preset is Ganyu · Cryo (ice-blue palette + Ganyu Q-chibi avatar + Ganyu namecard background). Ships with a top title bar (元素图标), sidebar character avatar card, and a floating Paimon mascot on the new-task welcome page. Applied via zero-invasive CDP injection + launchd persistence (never modifies app.asar). One-shot install auto-applies the Ganyu preset; uninstall cleanly reverts everything to QoderWork defaults. Use when the user asks to install / apply / customize / uninstall the QoderWork Genshin skin, 原神主题/原神皮肤/甘雨主题/冰系主题.
-version: 0.2.0
+version: 0.3.0
 name_zh: 原神主题皮肤 for QoderWork（甘雨·冰系）
 ---
 
@@ -94,20 +94,6 @@ node ~/.qoderwork/skin/inject.js --remove   # 移除皮肤并刷新页面还原
    覆盖一个 `<img src="paimon-mascot.png">` 在 `@keyframes paimon-float` 里跑
    `translateY(±10px) rotate(±3°)`，2.5 秒一个周期。
 
-## 元素主题切换（TODO: v2）
-
-计划支持通过命令行参数切换 7 种元素配色：
-
-```bash
-node ~/.qoderwork/skin/inject.js --element=pyro    # 火元素：暖红金
-node ~/.qoderwork/skin/inject.js --element=hydro   # 水元素：深蓝靛
-node ~/.qoderwork/skin/inject.js --element=anemo   # 风元素：薄荷绿
-node ~/.qoderwork/skin/inject.js --element=electro # 雷元素：紫罗兰
-node ~/.qoderwork/skin/inject.js --element=cryo    # 冰元素：冰蓝白
-node ~/.qoderwork/skin/inject.js --element=dendro  # 草元素：翠绿
-node ~/.qoderwork/skin/inject.js --element=geo     # 岩元素：琥珀金（默认）
-```
-
 ## 与 qoderwork-qq2007-skin 的关系
 
 两个皮肤共用同一个 launchd label（`com.qoderwork.skin`）和同一个运行目录
@@ -126,10 +112,12 @@ skill 的 `install.sh` 即可。
 
 ## 验证（Verification）
 
-- 看 `~/.qoderwork/skin/inject.log`，应有：
-  - `CSS 注入: "OK: CSS xxxx chars"`
-  - `顶栏/资料卡: "titlebar=1, character=1"`
-  - `侧边栏头像: "sidebar card=1, observer=active"`
-  - `浮动派蒙: "paimon mascot: hosts=1, built=1, observer=active"`（在新任务页时）
-- 在 QoderWork 界面应看到：整体璃月金暖色、顶部深蓝标题栏、右侧角色卡、
-  侧边栏金框头像 + "探索中..."、新任务页派蒙上下飘浮。
+- 安装脚本或 `node ~/.qoderwork/skin/inject.js` 的输出（launchd 触发时写入
+  `~/.qoderwork/skin/inject.log`）应有这两行：
+  - `CSS 注入: "OK: CSS 21693 chars"`（字符数随版本变化，非 0 即正常）
+  - `皮肤 DOM: "bootstrap: theme=dark, paimonHosts=1, observers=active"`
+  - `paimonHosts=0` 表示当前不在新任务欢迎页，属正常；切到「新任务」页后重跑即为 1。
+- 在 QoderWork 界面应看到：整体冰蓝主色（无绿色/金色残留）、顶部深蓝标题栏、
+  侧边栏「旅行者」头像卡 + "✦ 探索中..."、甘雨立绘背景、新任务页派蒙上下飘浮。
+- 切换亮/暗主题，背景应各自换到 `-light` / `-dark` 名片，主色随之切到
+  `#4aa8d0` / `#78c8e8`。
